@@ -15,11 +15,11 @@ Setting up the flask application with extensions:
 .. code-block:: python
 
     from flask import Flask
-    from flask_plugin import Plugin
+    from flask_continuum import Continuum
 
     app = Flask(__name__)
     app.config.from_object(Config)
-    plugin = Plugin(app)
+    continuum = Continuum(app)
 
 
 Here is how you use the plugin:

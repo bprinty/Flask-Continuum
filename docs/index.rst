@@ -1,6 +1,6 @@
-============
-Flask-Plugin
-============
+===============
+Flask-Continuum
+===============
 
 
 .. include:: overview.rst

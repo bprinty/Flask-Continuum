@@ -48,7 +48,7 @@ setup(
     include_package_data=True,
     platforms="any",
     install_requires=requirements,
-    keywords=[config.__pkg__, 'flask', 'plugin', 'scaffold'],
+    keywords=[config.__pkg__, 'flask', 'versioning', 'history', 'provenance', 'continuum'],
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',

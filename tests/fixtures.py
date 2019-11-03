@@ -12,7 +12,7 @@ import factory
 from flask import Flask, request, jsonify
 from werkzeug.exceptions import NotFound
 from flask_sqlalchemy import SQLAlchemy
-from flask_plugin import Plugin
+from flask_continuum import Continuum, VersioningMixin
 
 from . import SANDBOX
 
@@ -31,7 +31,7 @@ class Config(object):
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-plugin = Plugin(app)
+continuum = Continuum(app, db)
 
 
 @app.route('/items', methods=['GET', 'POST'])
@@ -73,7 +73,7 @@ def one(ident):
 
 # models
 # ------
-class Item(db.Model):
+class Item(db.Model, VersioningMixin):
     __tablename__ = 'item'
 
     # basic

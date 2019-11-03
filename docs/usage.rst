@@ -5,17 +5,35 @@ Usage
 The sections below detail how to fully use this module, along with context for design decisions made during development of the plugin.
 
 
-Section
--------
+Configuration
+-------------
 
-Info for section
+Talk about configuring with Flask-SQLAlchemy or engine= directly.
+
+
+Mixins
+------
+
+Talk about VersioningMixin
+
+.. code-block:: python
+
+    article = db.session.query(Article).one()
+
+    # show properties provided by mixin
+
+
+Versioning Specific Fields
+--------------------------
+
+Talk about how to configure version tracking for specific fields.
 
 
 Configuration
 -------------
 
-The following configuration values exist for Flask-Authorize.
-Flask-Authorize loads these values from your main Flask config which can
+The following configuration values exist for Flask-Continuum.
+Flask-Continuum loads these values from your main Flask config which can
 be populated in various ways. Note that some of those cannot be modified
 after the database engine was created so make sure to configure as early as
 possible and to not modify them at runtime.

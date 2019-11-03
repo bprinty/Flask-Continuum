@@ -66,6 +66,8 @@ class Continuum(object):
         self.db = None
         self.app = None
         self.engine = engine
+        self.user_cls = user_cls
+        self.current_user = current_user
 
         # arg mismatch
         if app is not None and \
@@ -81,8 +83,6 @@ class Continuum(object):
         # app is specified properly
         if app is not None:
             self.init_app(app)
-
-        make_versioned(user_cls=user_cls, plugins=[FlaskPlugin(current_user_id_factory=current_user)])
         return
 
     def init_app(self, app, db=None):
@@ -97,7 +97,16 @@ class Continuum(object):
             self.init_db(db)
 
         self.app = app
+        self.app.config.setdefault('CONTINUUM_RECORD_REQUEST_INFO', True)
 
+        # configure versioning support
+        if self.app.config['CONTINUUM_RECORD_REQUEST_INFO']:
+            plugins = [FlaskPlugin(current_user_id_factory=self.current_user)]
+        else:
+            plugins = None
+        make_versioned(user_cls=self.user_cls, plugins=plugins)
+
+        # configure engine mappers on first connection
         engine = self.engine
         if engine is None:
             db = self.db

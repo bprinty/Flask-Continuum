@@ -28,8 +28,12 @@ A list of configuration keys currently understood by the extension:
 .. tabularcolumns:: |p{6.5cm}|p{10cm}|
 
 ================================== =========================================
-``PLUGIN_DEFAULT_VARIABLE``        A variable used in the plugin for
-                                   something important.
+``CONTINUUM_RECORD_REQUEST_INFO``  Whether or not the plugin should record
+                                   request information in the versioning
+                                   tables. By default, this is set to True,
+                                   and additional data stored for provenance
+                                   are the user associated with the request
+                                   and the remote address of the request.
 ================================== =========================================
 
 
@@ -40,19 +44,26 @@ As detailed in the `Overview <./overview.html>`_ section of the documentation,
 the plugin can be customized with specific triggers. The following detail
 what can be customized:
 
-* ``option`` - An option for the plugin.
+* ``user_cls`` - An option for the plugin.
+* ``current_user`` - An option for the plugin.
+* ``engine`` - An option for the plugin.
 
 The code below details how you can override all of these configuration options:
 
 .. code-block:: python
 
     from flask import Flask
-    from flask_plugin import Plugin
-    from werkzeug.exceptions import HTTPException
+    from flask_continuum import Continuum
+    from sqlalchemy import create_engine
 
     app = Flask(__name__)
-    plugin = Plugin(option=True)
-    plugin.init_app(app)
+    engine = create_engine('postgresql://...')
+    continuum = Continuum(
+        engine=engine,
+        user_cls='Users',
+        current_user=lambda: g.user
+    )
+    continuum.init_app(app)
 
 
 For even more in-depth information on the module and the tools it provides, see the `API <./api.html>`_ section of the documentation.

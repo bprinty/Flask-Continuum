@@ -17,7 +17,6 @@ Setting up the flask application with extensions:
     from flask_continuum import Continuum
 
     app = Flask(__name__)
-    app.config.from_object(Config)
     db = SQLAlchemy(app)
     continuum = Continuum(app, db)
 
@@ -33,7 +32,6 @@ Or, using via the Flask app factory pattern:
     db = SQLAlchemy()
     continuum = Continuum(db=db)
     app = Flask(__name__)
-    app.config.from_object(Config)
     db.init_app(app)
     continuum.init_app(app)
 

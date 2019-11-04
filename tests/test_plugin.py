@@ -30,13 +30,14 @@ class TestVersioning(object):
         assert response.json['name'] == 'versioning 2'
 
         # test versioning properties
-        assert item.modified
+        item = db.session.query(Item).filter_by(id=item.id).one()
         assert item.version_count == 2
-        print(item.changeset)
-        assert item.version_json(0)['name'] == 'versioning 1'
-        assert item.version_json(0)['id'] == item.id
-        assert item.version_json(0)['name'] == 'versioning 2'
-        assert item.version_json(1)['id'] == item.id
+        assert item.versions[0].name == 'versioning 1'
+        assert item.versions[1].name == 'versioning 2'
+        # assert item.version_json(0)['name'] == 'versioning 1'
+        # assert item.version_json(0)['id'] == item.id
+        # assert item.version_json(0)['name'] == 'versioning 2'
+        # assert item.version_json(1)['id'] == item.id
         return
 
     def test_revert(self, client):

@@ -56,9 +56,18 @@ class Continuum(object):
     name of the table where users are stored:
 
     .. code-block:: python
+
         app = Flask(__name__)
         db = SQLAlchemy(app)
         continuum = Continuum(app, db, user_cls='Users')
+
+    Arguments:
+        app (Flask): Flask application to associate with plugin.
+        db (SQLAlchemy): SQLAlchemy extension to associate with plugin.
+        user_cls (str): Name of user class used in application.
+        engine (Engine): SQLAlchemy engine to associate with plugin.
+        current_user (callable): Callable object to determine user assocaited
+                                 with request.
 
     """
 

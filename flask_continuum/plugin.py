@@ -8,10 +8,23 @@
 # imports
 # -------
 from flask import Flask
+from flask.globals import _app_ctx_stack, _request_ctx_stack
 from sqlalchemy_continuum.plugins import FlaskPlugin
 from sqlalchemy_continuum import make_versioned
 from sqlalchemy.orm import configure_mappers
 from sqlalchemy import event
+
+
+# helpers
+# -------
+def fetch_current_user_id():
+    if _app_ctx_stack.top is None or _request_ctx_stack.top is None:
+        return
+    try:
+        from flask_login import current_user
+        return current_user.id
+    except (ImportError, AttributeError):
+        return
 
 
 # plugin
@@ -71,7 +84,7 @@ class Continuum(object):
 
     """
 
-    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=None):
+    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=fetch_current_user_id):
         self.db = None
         self.app = None
         self.engine = engine

@@ -1,29 +1,29 @@
 
-.. Uncomment below for banners
+Uncomment below for banners
 
-.. |Build status| |Code coverage| |Maintenance yes| |GitHub license| |Documentation Status|
+|Build status| |Code coverage| |Maintenance yes| |GitHub license| |Documentation Status|
 
-.. .. |Build status| image:: https://travis-ci.com/bprinty/Flask-Plugin.png?branch=master
-..    :target: https://travis-ci.com/bprinty/Flask-Plugin
+.. |Build status| image:: https://travis-ci.com/bprinty/Flask-Continuum.png?branch=master
+   :target: https://travis-ci.com/bprinty/Flask-Continuum
 
-.. .. |Code coverage| image:: https://codecov.io/gh/bprinty/Flask-Plugin/branch/master/graph/badge.svg
-..    :target: https://codecov.io/gh/bprinty/Flask-Plugin
+.. |Code coverage| image:: https://codecov.io/gh/bprinty/Flask-Continuum/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/bprinty/Flask-Continuum
 
-.. .. |Maintenance yes| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg
-..    :target: https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity
+.. |Maintenance yes| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg
+   :target: https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity
 
-.. .. |GitHub license| image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg
-..    :target: https://github.com/bprinty/Flask-Plugin/blob/master/LICENSE
+.. |GitHub license| image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg
+   :target: https://github.com/bprinty/Flask-Continuum/blob/master/LICENSE
 
-.. .. |Documentation Status| image:: https://readthedocs.org/projects/flask-plugin/badge/?version=latest
-..    :target: http://flask-plugin.readthedocs.io/?badge=latest
+.. |Documentation Status| image:: https://readthedocs.org/projects/flask-continuum/badge/?version=latest
+   :target: http://flask-continuum.readthedocs.io/?badge=latest
 
 
 ============================
-Flask-Plugin
+Flask-Continuum
 ============================
 
-Flask-Plugin is a scaffold for Flask extension development. To begin writing a new flask extension, copy this repository and change all refs from ``flask_plugin`` and ``Flask-Plugin`` to whatever your extension is named. Include an overview description of the plugin here.
+Flask-Continuum is a lightweight Flask extension for providing data provenance and versioning support to Flask applications using SQLAlchemy. It is built on top of the `sqlalchemy-continuum <https://github.com/kvesteri/sqlalchemy-continuum>`_ package, and provides a more Flask-y development experience for app configuration. If you'd like to configure your application with ``sqlalchemy-continuum`` directly, consult the ``sqlalchemy-continuum`` `documentation <https://sqlalchemy-continuum.readthedocs.io/en/latest/>`_.
 
 
 Installation
@@ -33,54 +33,101 @@ To install the latest stable release via pip, run:
 
 .. code-block:: bash
 
-    $ pip install Flask-Plugin
+    $ pip install Flask-Continuum
 
 
 Alternatively with easy_install, run:
 
 .. code-block:: bash
 
-    $ easy_install Flask-Plugin
+    $ easy_install Flask-Continuum
 
 
 To install the bleeding-edge version of the project (not recommended):
 
 .. code-block:: bash
 
-    $ git clone http://github.com/bprinty/Flask-Plugin.git
-    $ cd Flask-Plugin
+    $ git clone http://github.com/bprinty/Flask-Continuum.git
+    $ cd Flask-Continuum
     $ python setup.py install
 
 
 Usage
 =====
 
-Below is a minimal application configured to take advantage of some of the extension's core features:
+Setting up the flask application with extensions:
 
 .. code-block:: python
 
     from flask import Flask
-    from flask_plugin import Plugin
+    from flask_sqlalchemy import SQLAlchemy
+    from flask_continuum import Continuum
 
     app = Flask(__name__)
-    app.config.from_object(Config)
-    plugin = Plugin(app)
+    db = SQLAlchemy(app)
+    continuum = Continuum(app, db)
 
 
-The following is a minimal application highlighting most of the major features provided by the extension:
+Or, using via the Flask app factory pattern:
 
 .. code-block:: python
 
-    INSERT CODE
+    from flask import Flask
+    from flask_sqlalchemy import SQLAlchemy
+    from flask_continuum import Continuum
+
+    db = SQLAlchemy()
+    continuum = Continuum(db=db)
+    app = Flask(__name__)
+    db.init_app(app)
+    continuum.init_app(app)
+
+
+The following is a minimal example highlighting how the extension is used. Much of the example was taken from the SQLAlchemy-Continuum documentation to show how this plugin extends that package for a Flask application:
+
+.. code-block:: python
+
+    from flask_continuum import VersioningMixin
+
+    # defining database schema
+    class Article(db.Model, VersioningMixin):
+        __tablename__ = 'article'
+
+        id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+        name = db.Column(db.Unicode(255))
+        content = db.Column(db.UnicodeText)
+
+
+    # later in api or request handlers
+    article = Article(name='Some article', content='Some content')
+    session.add(article)
+    session.commit()
+
+    # article has now one version stored in database
+    article.versions[0].name
+    # 'Some article'
+
+    article.name = 'Updated name'
+    session.commit()
+
+    article.versions[1].name
+    # 'Updated name'
+
+
+    # lets revert back to first version
+    article.versions[0].revert()
+
+    article.name
+    # 'Some article'
 
 
 Documentation
 =============
 
-For more detailed documentation, see the `Docs <https://Flask-Plugin.readthedocs.io/en/latest/>`_.
+For more detailed documentation, see the `Docs <https://Flask-Continuum.readthedocs.io/en/latest/>`_.
 
 
 Questions/Feedback
 ==================
 
-File an issue in the `GitHub issue tracker <https://github.com/bprinty/Flask-Plugin/issues>`_.
+File an issue in the `GitHub issue tracker <https://github.com/bprinty/Flask-Continuum/issues>`_.

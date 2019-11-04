@@ -76,9 +76,11 @@ def one(ident):
 class Item(db.Model, VersioningMixin):
     __tablename__ = 'item'
 
-    # basic
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True, index=True)
+
+    def json(self):
+        return dict(id=self.id, name=self.name)
 
 
 # factories
@@ -91,6 +93,7 @@ class ItemFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Item
         sqlalchemy_session = db.session
+        sqlalchemy_session_persistence = 'commit'
 
 
 # fixtures

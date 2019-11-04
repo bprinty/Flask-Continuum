@@ -6,7 +6,7 @@ API
 Base
 ----
 
-.. autoclass:: flask_plugin.plugin.Plugin
+.. autoclass:: flask_continuum.Continuum
    :members:
 
 
@@ -14,6 +14,6 @@ Base
 Databse Mixins
 --------------
 
-.. autoclass:: flask_plugin.mixins.ExampleMixin
+.. autoclass:: flask_continuum.VersioningMixin
    :members:
 

@@ -48,48 +48,41 @@ class VersioningMixin(object):
         """
         return changeset(self)
 
-    # def version_json(self, idx):
-    #     """
-    #     Return json metadata for specific model version.
-
-    #     Arguments:
-    #         idx (int): Index of versioned object to return JSON for.
-    #     """
-    #     if not hasattr(self, 'json'):
-    #         raise AssertionError('Error: json() method containing json data must be on model to use this method.')
-    #     item = self.versions[idx]
-    #     data = self.json()
-    #     data.update({
-    #         k: getattr(item, k)
-    #         for k in data if k in item.__dict__
-    #     })
-    #     return data
-
     @property
-    def history(self):
+    def records(self):
+        """
+        Return list of records in versioning history.
+        """
 
         class VersionedInstance(self.__class__):
+            __abstract__ = True
 
-            def __init__(self, **kwargs):
-                self.__version_obj__ = kwargs.pop('__version_obj__')
-                for key in kwargs:
-                    setattr(self, key, kwargs[key])
+            def __init__(self, head, version, columns):
+                self.__head__ = head
+                self.__version__ = version
+                self.__columns__ = columns
+                for k in columns:
+                    if k in version.__dict__:
+                        self.__dict__[k] = getattr(version, k)
+                    else:
+                        self.__dict__[k] = getattr(head, k)
                 return
 
             @property
             def previous(self):
-                return self.__version_obj__.previous
+                return self.__class__(self.__head__, self.__version__.previous, self.__columns__)
 
             @property
             def next(self):
-                return self.__version_obj__.next
+                return self.__class__(self.__head__, self.__version__.next, self.__columns__)
 
             @property
             def index(self):
-                return self.__version_obj__.index
+                return self.__class__(self.__head__, self.__version__.index, self.__columns__)
 
             def revert(self):
-                return self.__version_obj__.revert()
+                self.__version__.revert()
+                return self.__head__
 
         VersionedInstance.__name__ = 'Versioned{}'.format(self.__class__.__name__)
 
@@ -104,15 +97,6 @@ class VersioningMixin(object):
         proxies = []
         for idx in range(count_versions(self)):
             item = self.versions[idx]
-            data = {
-                k: getattr(item, k)
-                if k in item.__dict__ else getattr(self, k)
-                for k in columns
-            }
-            print(data)
-            data['__version_obj__'] = item
-            proxies.append(VersionedInstance(**data))
-
-        print(proxies)
+            proxies.append(VersionedInstance(self, item, columns))
 
         return proxies

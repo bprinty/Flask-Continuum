@@ -142,6 +142,11 @@ class Continuum(object):
                         'for more detailed information.')
 
                 db = app.extensions['sqlalchemy']
+
+            # register app on sqlalchemy object (accounting for Flask-SQLAlchemy inconsistencies)
+            if db.app is None:
+                db.app = app
+
             engine = db.engine
 
         @event.listens_for(engine, "connect")

@@ -20,7 +20,7 @@ class TestVersioning(object):
         assert response.json['name'] == items[0].name
         return
 
-    def test_versioning(self, client):
+    def test_history(self, client):
         # create item and update it
         item = ItemFactory.create(name='versioning 1')
         response = client.put('/items/{}'.format(item.id), json=dict(
@@ -31,13 +31,13 @@ class TestVersioning(object):
 
         # test versioning properties
         item = db.session.query(Item).filter_by(id=item.id).one()
-        assert item.version_count == 2
+        assert len(item.history) == 2
         assert item.versions[0].name == 'versioning 1'
         assert item.versions[1].name == 'versioning 2'
-        # assert item.version_json(0)['name'] == 'versioning 1'
-        # assert item.version_json(0)['id'] == item.id
-        # assert item.version_json(0)['name'] == 'versioning 2'
-        # assert item.version_json(1)['id'] == item.id
+        assert item.history[0].json()['name'] == 'versioning 1'
+        assert item.history[0].json()['id'] == item.id
+        assert item.history[1].json()['name'] == 'versioning 2'
+        assert item.history[1].json()['id'] == item.id
         return
 
     def test_revert(self, client):
@@ -56,7 +56,7 @@ class TestVersioning(object):
 
         # test that multiple versions exist
         item = db.session.query(Item).filter_by(name='revert 2').one()
-        assert item.version_count == 2
+        assert len(item.history) == 2
 
         # revert one of the versions
         version = item.versions[0]

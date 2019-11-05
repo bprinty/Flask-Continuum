@@ -30,8 +30,10 @@ class Config(object):
 
 app = Flask(__name__)
 app.config.from_object(Config)
-db = SQLAlchemy(app)
-continuum = Continuum(app, db)
+db = SQLAlchemy()
+continuum = Continuum(db=db)
+db.init_app(app)
+continuum.init_app(app)
 
 
 @app.route('/items', methods=['GET', 'POST'])

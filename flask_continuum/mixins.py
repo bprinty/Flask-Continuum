@@ -7,6 +7,7 @@
 
 # imports
 # -------
+from sqlalchemy import inspect
 from sqlalchemy_continuum import changeset, count_versions, is_modified
 
 
@@ -33,12 +34,12 @@ class VersioningMixin(object):
     """
     __versioned__ = {}
 
-    # @property
-    # def modified(self):
-    #     """
-    #     Return boolean describing if object has been modified.
-    #     """
-    #     return is_modified(self)
+    @property
+    def modified(self):
+        """
+        Return boolean describing if object has been modified.
+        """
+        return count_versions(self) > 0
 
     @property
     def changeset(self):
@@ -46,13 +47,6 @@ class VersioningMixin(object):
         Return SQLAlchemy-Continuum changeset for object.
         """
         return changeset(self)
-
-    @property
-    def version_count(self):
-        """
-        Return number of versions for object.
-        """
-        return count_versions(self)
 
     # def version_json(self, idx):
     #     """
@@ -70,3 +64,55 @@ class VersioningMixin(object):
     #         for k in data if k in item.__dict__
     #     })
     #     return data
+
+    @property
+    def history(self):
+
+        class VersionedInstance(self.__class__):
+
+            def __init__(self, **kwargs):
+                self.__version_obj__ = kwargs.pop('__version_obj__')
+                for key in kwargs:
+                    setattr(self, key, kwargs[key])
+                return
+
+            @property
+            def previous(self):
+                return self.__version_obj__.previous
+
+            @property
+            def next(self):
+                return self.__version_obj__.next
+
+            @property
+            def index(self):
+                return self.__version_obj__.index
+
+            def revert(self):
+                return self.__version_obj__.revert()
+
+        VersionedInstance.__name__ = 'Versioned{}'.format(self.__class__.__name__)
+
+        # gather cols
+        columns = []
+        mapper = inspect(self.__class__)
+        for col in mapper.attrs:
+            if hasattr(col, 'columns'):
+                columns.append(col.columns[0].key)
+
+        # configure versioning
+        proxies = []
+        for idx in range(count_versions(self)):
+            item = self.versions[idx]
+            data = {
+                k: getattr(item, k)
+                if k in item.__dict__ else getattr(self, k)
+                for k in columns
+            }
+            print(data)
+            data['__version_obj__'] = item
+            proxies.append(VersionedInstance(**data))
+
+        print(proxies)
+
+        return proxies

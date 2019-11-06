@@ -75,7 +75,7 @@ class VersioningMixin(object):
 
         # dynamically create new type with mixin functionality
         VersionedClass = type(
-            'Versioned{}'.format(self.__class__.__name__),
+            '{}Record'.format(self.__class__.__name__),
             (VersionedInstanceMixin, self.__class__), {}
         )
 

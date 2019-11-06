@@ -54,37 +54,30 @@ class VersioningMixin(object):
         Return list of records in versioning history.
         """
 
-        class VersionedInstance(self.__class__):
+        class VersionedInstanceMixin(object):
             __abstract__ = True
-
-            def __init__(self, head, version, columns):
-                self.__head__ = head
-                self.__version__ = version
-                self.__columns__ = columns
-                for k in columns:
-                    if k in version.__dict__:
-                        self.__dict__[k] = getattr(version, k)
-                    else:
-                        self.__dict__[k] = getattr(head, k)
-                return
 
             @property
             def previous(self):
-                return self.__class__(self.__head__, self.__version__.previous, self.__columns__)
+                return self.__version__.previous
 
             @property
             def next(self):
-                return self.__class__(self.__head__, self.__version__.next, self.__columns__)
+                return self.__version__.next
 
             @property
             def index(self):
-                return self.__class__(self.__head__, self.__version__.index, self.__columns__)
+                return self.__version__.index
 
             def revert(self):
                 self.__version__.revert()
-                return self.__head__
+                return
 
-        VersionedInstance.__name__ = 'Versioned{}'.format(self.__class__.__name__)
+        # dynamically create new type with mixin functionality
+        VersionedClass = type(
+            'Versioned{}'.format(self.__class__.__name__),
+            (VersionedInstanceMixin, self.__class__), {}
+        )
 
         # gather cols
         columns = []
@@ -96,7 +89,19 @@ class VersioningMixin(object):
         # configure versioning
         proxies = []
         for idx in range(count_versions(self)):
-            item = self.versions[idx]
-            proxies.append(VersionedInstance(self, item, columns))
+            record = self.versions[idx]
+
+            # get column data
+            data = {}
+            for k in columns:
+                if k in record.__dict__:
+                    data[k] = getattr(record, k)
+                else:
+                    data[k] = getattr(self, k)
+
+            # create new abstract object
+            item = VersionedClass(**data)
+            item.__version__ = record
+            proxies.append(item)
 
         return proxies

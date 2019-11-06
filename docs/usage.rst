@@ -108,31 +108,30 @@ For more details on what the ``__versioned__`` property can encode, see the ``SQ
         content = db.Column(db.UnicodeText)
 
 
+.. Configuration
+.. -------------
 
-Configuration
--------------
+.. The following configuration values exist for Flask-Continuum.
+.. Flask-Continuum loads these values from your main Flask config which can
+.. be populated in various ways. Note that some of those cannot be modified
+.. after the database engine was created so make sure to configure as early as
+.. possible and to not modify them at runtime.
 
-The following configuration values exist for Flask-Continuum.
-Flask-Continuum loads these values from your main Flask config which can
-be populated in various ways. Note that some of those cannot be modified
-after the database engine was created so make sure to configure as early as
-possible and to not modify them at runtime.
+.. Configuration Keys
+.. ++++++++++++++++++
 
-Configuration Keys
-++++++++++++++++++
+.. A list of configuration keys currently understood by the extension:
 
-A list of configuration keys currently understood by the extension:
+.. .. tabularcolumns:: |p{6.5cm}|p{10cm}|
 
-.. tabularcolumns:: |p{6.5cm}|p{10cm}|
-
-================================== =========================================
-``CONTINUUM_RECORD_REQUEST_INFO``  Whether or not the plugin should record
-                                   request information in the versioning
-                                   tables. By default, this is set to ``True``,
-                                   and additional data stored for provenance
-                                   are the user associated with the request
-                                   and the remote address of the request.
-================================== =========================================
+.. ================================== =========================================
+.. ``CONTINUUM_RECORD_REQUEST_INFO``  Whether or not the plugin should record
+..                                    request information in the versioning
+..                                    tables. By default, this is set to ``True``,
+..                                    and additional data stored for provenance
+..                                    are the user associated with the request
+..                                    and the remote address of the request.
+.. ================================== =========================================
 
 
 Other Customizations

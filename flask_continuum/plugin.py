@@ -87,7 +87,7 @@ class Continuum(object):
 
     """
 
-    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=fetch_current_user_id):
+    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=fetch_current_user_id, plugins=[]):
         self.db = None
         self.app = None
         self.engine = engine
@@ -114,7 +114,7 @@ class Continuum(object):
             user_cls=self.user_cls,
             plugins=[
                 FlaskPlugin(current_user_id_factory=self.current_user)
-            ]
+            ] + plugins
         )
         return
 

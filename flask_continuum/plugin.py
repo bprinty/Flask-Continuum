@@ -82,8 +82,10 @@ class Continuum(object):
         db (SQLAlchemy): SQLAlchemy extension to associate with plugin.
         user_cls (str): Name of user class used in application.
         engine (Engine): SQLAlchemy engine to associate with plugin.
-        current_user (callable): Callable object to determine user assocaited
+        current_user (callable): Callable object to determine user associated
                                  with request.
+        plugins (List): List of other SQLAlchemy-Continuum plugins to install.
+            see: https://sqlalchemy-continuum.readthedocs.io/en/latest/plugins.html
 
     """
 

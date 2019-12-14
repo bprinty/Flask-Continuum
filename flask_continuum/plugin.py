@@ -23,7 +23,7 @@ def fetch_current_user_id():
     try:
         from flask_login import current_user
         return current_user.id
-    except (ImportError, AttributeError):
+    except Exception:
         return
 
 

@@ -2,7 +2,7 @@
 Overview
 ========
 
-Flask-Continuum is a lightweight Flask extension for providing data provenance and versioning support to Flask applications using SQLAlchemy. It is built on top of the `sqlalchemy-continuum <https://github.com/kvesteri/sqlalchemy-continuum>`_ package, and provides a more Flask-y development experience for app configuration. If you'd like to configure your application with ``sqlalchemy-continuum`` directly, consult the ``sqlalchemy-continuum`` `documentation <https://sqlalchemy-continuum.readthedocs.io/en/latest/>`_.
+Flask-Continuum is a lightweight Flask extension providing data provenance and versioning support to Flask applications using SQLAlchemy. It is built on top of the `sqlalchemy-continuum <https://github.com/kvesteri/sqlalchemy-continuum>`_ package, and provides a more Flask-y development experience for app configuration. If you'd like to configure your application with ``sqlalchemy-continuum`` directly, consult the ``sqlalchemy-continuum`` `documentation <https://sqlalchemy-continuum.readthedocs.io/en/latest/>`_.
 
 
 A Minimal Application

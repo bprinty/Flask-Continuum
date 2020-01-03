@@ -23,7 +23,7 @@ def fetch_current_user_id():
     try:
         from flask_login import current_user
         return current_user.id
-    except (ImportError, AttributeError):
+    except Exception:
         return
 
 
@@ -56,6 +56,18 @@ class Continuum(object):
         app = Flask(__name__)
         continuum.init_app(app)
 
+    To configure SQLAlchemy-Continuum with additional plugins, use the
+    ``plugins`` argument to the extension:
+
+    .. code-block:: python
+
+        from sqlalchemy.continuum.plugins import PropertyModTrackerPlugin
+
+        db = SQLAlchemy()
+        continuum = Continuum(db=db, plugins=[PropertyModTrackerPlugin()])
+        app = Flask(__name__)
+        continuum.init_app(app)
+
     You can also use this plugin with sqlalchemy directly (i.e. not using
     Flask-SQLAlchemy). To do so, simply pass the database engine to this
     plugin upon instantiation:
@@ -82,12 +94,15 @@ class Continuum(object):
         db (SQLAlchemy): SQLAlchemy extension to associate with plugin.
         user_cls (str): Name of user class used in application.
         engine (Engine): SQLAlchemy engine to associate with plugin.
-        current_user (callable): Callable object to determine user assocaited
+        current_user (callable): Callable object to determine user associated
                                  with request.
+        plugins (list): List of other SQLAlchemy-Continuum plugins to install.
+            See: `https://sqlalchemy-continuum.readthedocs.io/en/latest/plugins.html`_
+            for more information.
 
     """
 
-    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=fetch_current_user_id):
+    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=fetch_current_user_id, plugins=[]):
         self.db = None
         self.app = None
         self.engine = engine
@@ -114,7 +129,7 @@ class Continuum(object):
             user_cls=self.user_cls,
             plugins=[
                 FlaskPlugin(current_user_id_factory=self.current_user)
-            ]
+            ] + list(plugins)
         )
         return
 

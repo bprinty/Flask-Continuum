@@ -171,6 +171,30 @@ If you're using ``Flask-Migrate`` to manage migrations, you don't need to manual
 This will automatically configure mappers before ``Flask-Migrate`` performs any migration tasks.
 
 
+Troubleshooting
++++++++++++++++
+
+.. code-block:: python
+
+  >>> article = Article()
+  >>> db.session.add(article)
+  >>> db.session.commit()
+  ...
+  OperationalError: no such table: transaction
+
+This is usually an error caused when database tables haven't been created before a commit is made. Make sure you create database tables with ``db.create_all()`` before trying to commit any data to the database.
+
+
+.. code-block:: bash
+
+    ~$ flask db migrate
+    ...
+    INFO  [alembic.env] No changes in schema detected.
+
+
+This alembic message is produced when alembic tries to create a new database migration but doesn't detect any changes in SQLAlchemy models when trying to auto-generate the migration. It's usually caused by an application context not being pushed before migrations take place. See the `Migrations`_ section for information on resolving this issue.
+
+
 Other Customizations
 ++++++++++++++++++++
 

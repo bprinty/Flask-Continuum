@@ -19,7 +19,7 @@ from .migrate import app, db
 class TestMigrations(object):
 
     def call(self, cmd):
-        return subprocess.call('FLASK_APP=tests/migrate.py:app {} &>/dev/null'.format(cmd), cwd=BASE, shell=True)
+        return subprocess.call('FLASK_APP=tests/migrate.py:app {} 1>/dev/null'.format(cmd), cwd=BASE, shell=True)
 
     def test_create_migration(self, application):
         path = os.path.join(SANDBOX, 'migrations')

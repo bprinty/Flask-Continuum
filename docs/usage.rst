@@ -134,6 +134,43 @@ For more details on what the ``__versioned__`` property can encode, see the ``SQ
 .. ================================== =========================================
 
 
+Migrations
+++++++++++
+
+If you're using `alembic <https://alembic.sqlalchemy.org/en/latest/>`_ or `Flask-Migrate <https://flask-migrate.readthedocs.io/en/latest/#>`_ alongside this tool, you need to make sure a flask application context is pushed before you create new migrations. Otherwise, database fields dynamically added by the Mixins above won't be picked up by the migration tool.
+
+If you're using alembic directly, you'll need to manually configure mappers in your app script or ``create_app`` factory after models are declared:
+
+.. code-block:: python
+
+  app = Flask(__name__)
+  db = SQLAlchemy(app)
+  continuum = Continuum(app, db)
+
+  class Article(db.Model, VersioningMixin):
+
+      id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+      name = db.Column(db.Unicode(255))
+
+  continuum.configure()
+
+If you're using ``Flask-Migrate`` to manage migrations, you don't need to manually configure the orm with versioning extensions. You can simply pass an instantiated ``Flask-Migrate`` plugin to ``Flask-Continuum``:
+
+.. code-block:: python
+
+  app = Flask(__name__)
+  db = SQLAlchemy(app)
+  migrate = Migrate(app, db)
+  continuum = Continuum(app, db, migrate)
+
+  class Article(db.Model, VersioningMixin):
+
+      id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+      name = db.Column(db.Unicode(255))
+
+This will automatically configure mappers before ``Flask-Migrate`` performs any migration tasks.
+
+
 Other Customizations
 ++++++++++++++++++++
 

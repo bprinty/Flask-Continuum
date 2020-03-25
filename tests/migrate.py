@@ -6,16 +6,19 @@ from flask_migrate import Migrate
 
 from . import SANDBOX
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}/migrate.db'.format(SANDBOX)\
+app = Flask('migrate')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}/migrate.db'.format(SANDBOX)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 continuum = Continuum(app, db, migrate)
 
-class User(VersioningMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(123))
+class Article(db.Model, VersioningMixin):
+    __tablename__ = 'article'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Unicode(255))
+    content = db.Column(db.UnicodeText)
 
 
 @app.cli.command('create')

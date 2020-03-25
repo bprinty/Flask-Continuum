@@ -7,7 +7,7 @@
 
 # imports
 # -------
-from flask import Flask
+from flask import Flask, appcontext_pushed
 from flask.globals import _app_ctx_stack, _request_ctx_stack
 from sqlalchemy_continuum.plugins import FlaskPlugin
 from sqlalchemy_continuum import make_versioned
@@ -192,6 +192,6 @@ class Continuum(object):
         self.migrate = migrate
         return
 
-    def configure(self):
+    def configure(self, *args, **kwargs):
         configure_mappers()
         return

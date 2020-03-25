@@ -47,12 +47,14 @@ def pytest_configure(config):
 
 @pytest.fixture(autouse=True, scope='session')
 def application(request):
+    import shutil
     from . import SANDBOX
     global SETTINGS, APP, CLIENT
 
     # create sandbox for testing
-    if not os.path.exists(SANDBOX):
-        os.makedirs(SANDBOX)
+    if os.path.exists(SANDBOX):
+        shutil.rmtree(SANDBOX)
+    os.makedirs(SANDBOX)
 
     # create application
     if SETTINGS['echo']:

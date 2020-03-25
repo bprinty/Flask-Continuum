@@ -102,8 +102,9 @@ class Continuum(object):
 
     """
 
-    def __init__(self, app=None, db=None, user_cls=None, engine=None, current_user=fetch_current_user_id, plugins=[]):
+    def __init__(self, app=None, db=None, migrate=None, user_cls=None, engine=None, current_user=fetch_current_user_id, plugins=[]):
         self.db = None
+        self.migrate = None
         self.app = None
         self.engine = engine
         self.user_cls = user_cls
@@ -119,6 +120,8 @@ class Continuum(object):
         # proper spec
         if db is not None:
             self.init_db(db)
+        if migrate is not None:
+            self.init_migrate(migrate)
 
         # app is specified properly
         if app is not None:
@@ -167,12 +170,28 @@ class Continuum(object):
 
             engine = db.engine
 
+        # configure mappers if outside of app context
+        if self.migrate is not None:
+            @self.migrate.configure
+            def push_context(config):
+                self.configure()
+                return config
+
+        # configure mappers on app start
         @event.listens_for(engine, "connect")
         def do_connect(dbapi_connection, connection_record):
-            configure_mappers()
+            self.configure()
             return
         return
 
     def init_db(self, db):
         self.db = db
+        return
+
+    def init_migrate(self, migrate):
+        self.migrate = migrate
+        return
+
+    def configure(self):
+        configure_mappers()
         return

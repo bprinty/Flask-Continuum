@@ -24,6 +24,7 @@ class Config:
                 setattr(self, m[0], m[1])
         return
 
+
 config = Config('flask_continuum/__init__.py')
 
 
